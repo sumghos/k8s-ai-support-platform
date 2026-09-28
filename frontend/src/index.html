@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>K8s AI Support Platform</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .status {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            background: #f0f0f0;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🚀 K8s AI Support Platform</h1>
+
+    <p>
+        Kubernetes-based AI support platform
+    </p>
+
+    <button onclick="checkBackend()">
+        Check Backend
+    </button>
+
+    <div id="result" class="status">
+        Backend status will appear here.
+    </div>
+
+    <script>
+
+        async function checkBackend() {
+
+            const result = document.getElementById("result");
+
+            try {
+
+                const response = await fetch("/api/health");
+
+                const data = await response.json();
+
+                result.innerHTML =
+                    "Backend Status: " + data.status;
+
+            } catch (error) {
+
+                result.innerHTML =
+                    "Backend connection failed";
+
+                console.error(error);
+            }
+        }
+
+    </script>
+
+</body>
+</html>

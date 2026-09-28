@@ -19,3 +19,10 @@ def health():
     return {
         "status": "healthy"
     }
+
+
+@app.get("/ready")
+def ready():
+    return {
+        "status": "ready"
+    }
