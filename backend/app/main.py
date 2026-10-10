@@ -1,7 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from kubernetes.client.exceptions import ApiException
 from app.k8s_service import KubernetesService
+from app.k8s_tools import KubernetesTools
+from app.diagnostics import DiagnosticOrchestrator
 k8s = KubernetesService()
+tools = KubernetesTools()
+diagnostics = DiagnosticOrchestrator()
 
 app = FastAPI(
     title="K8s AI Support Platform",
@@ -52,7 +56,7 @@ def get_pods():
 @app.get("/api/k8s/pods")
 def list_pods():
     try:
-        return {"pods": k8s.list_pods()}
+        return {"pods": tools.list_pods()}
     except ApiException as e:
         raise HTTPException(
             status_code=e.status or 500,
@@ -63,7 +67,7 @@ def list_pods():
 @app.get("/api/k8s/pods/{pod_name}")
 def get_pod(pod_name: str):
     try:
-        return k8s.get_pod(pod_name)
+        return {"Pods Details": tools.get_pod(pod_name)}
     except ApiException as e:
         raise HTTPException(
             status_code=e.status or 500,
@@ -76,7 +80,7 @@ def pod_logs(pod_name: str):
     try:
         return {
             "pod": pod_name,
-            "logs": k8s.get_pod_logs(pod_name)
+            "logs": tools.get_pod_logs(pod_name)
         }
     except ApiException as e:
         raise HTTPException(
@@ -88,9 +92,7 @@ def pod_logs(pod_name: str):
 @app.get("/api/k8s/deployments")
 def list_deployments():
     try:
-        return {
-            "deployments": k8s.list_deployments()
-        }
+        return {"deployments": tools.list_deployments()}
     except ApiException as e:
         raise HTTPException(
             status_code=e.status or 500,
@@ -101,21 +103,23 @@ def list_deployments():
 @app.get("/api/k8s/events")
 def list_events():
     try:
-        return {
-            "events": k8s.list_events()
-        }
+        return {"events": tools.list_events()}
     except ApiException as e:
         raise HTTPException(
             status_code=e.status or 500,
             detail=e.reason
         )
+    
 @app.get("/api/k8s/pods/{pod_name}/diagnose")
 def diagnose_pod(pod_name: str):
     try:
-        return k8s.diagnose_pod(pod_name)
+        return {"Diagnose": tools.diagnose_pod(pod_name)}
 
     except ApiException as e:
         raise HTTPException(
             status_code=e.status or 500,
             detail=e.reason
         )    
+@app.get("/api/k8s/pods/{pod_name}/full-diagnosis")
+def full_diagnosis(pod_name: str):
+    return diagnostics.diagnose_pod(pod_name)    
